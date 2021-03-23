@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Workflow PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Workflow explicitTransitions="true" libraries="Identity" name="IIQ Create User Workflow" taskType="LCM" type="LCMProvisioning">
+          
+    
+    <Variable name="identityModel"/>
+          
+    
+    <Variable name="identityName">
+                    
+        
+        <Description>The name of the identity.</Description>
+                  
+    
+    </Variable>
+          
+    
+    <Variable name="project"/>
+          
+    
+    <Variable name="identityDisplayName"/>
+          
+    
+    <Variable name="identity">
+                    
+        
+        <Description>The identity being created</Description>
+                  
+    
+    </Variable>
+          
+    
+    <Variable initializer="string:false" name="optimisticProvisioning"/>
+          
+    
+    <Variable initializer="string:none" name="approvalScheme"/>
+          
+    
+    <Variable initializer="string:LCM" name="source">
+                    
+        
+        <Description>Source</Description>
+                  
+    
+    </Variable>
+          
+    
+    <Variable initializer="true" name="isSelfService"/>
+          
+    
+    <Variable name="identityDisplayName"/>
+          
+    
+    <Variable input="true" name="httpSession" transient="true"/>
+          
+    
+    <Variable initializer="string:true" name="foregroundProvisioning"/>
+          
+    
+    <Variable name="policy"/>
+          
+    
+    <Variable name="plan"/>
+          
+    
+    <RuleLibraries>
+                    
+        
+        <Reference class="sailpoint.object.Rule" name="JTT_Rule_Utility"/>
+                  
+    
+    </RuleLibraries>
+          
+    
+    <Step icon="Start" name="Start" posX="20" posY="20">
+                    
+        
+        <Transition to="Initialize"/>
+                  
+    
+    </Step>
+          
+    
+    <Step action="getIdentityModel" icon="Task" name="Initialize" posX="153" resultVariable="identityModel">
+                    
+        
+        <Transition to="Select User Type Form"/>
+                  
+    
+    </Step>
+          
+    
+    <Step icon="Default" name="Select User Type Form" posX="302" posY="19">
+                    
+        
+        <Approval name="create" owner="ref:requester" return="identityModel">
+                              
+            
+            <Arg name="workItemType" value="Form"/>
+                              
+            
+            <Arg name="workItemForm" value="Form_IIQ_Select User"/>
+                              
+            
+            <Arg name="workItemFormBasePath" value="identityModel"/>
+                            
+        
+        </Approval>
+                    
+        
+        <Transition to="Create User Form">
+                              
+            
+            <Script>
+                                        
+                
+                <Source>
+                                        
+                    <![CDATA[                                                                                                                   
+		    	import sailpoint.object.Identity;
+					import sailpoint.transformer.IdentityTransformer;
+					String userForm = "IIQ "+ identityModel.get("userType");
+					wfcontext.setVariable("userForm",userForm);       		
+		      return approved;      				                                                                                      
+        ]]>
+                                    
+                </Source>
+                                      
+            
+            </Script>
+                            
+        
+        </Transition>
+                  
+    
+    </Step>
+          
+    
+    <Step icon="Default" name="Create User Form" posX="302" posY="19">
+                    
+        
+        <Approval name="create" owner="ref:requester" return="identityModel">
+                              
+            
+            <Arg name="workItemType" value="Form"/>
+                              
+            
+            <Arg name="workItemForm" value="ref:userForm"/>
+                              
+            
+            <Arg name="workItemFormBasePath" value="identityModel"/>
+                            
+        
+        </Approval>
+                    
+        
+        <Transition to="Create User Approval Form"/>
+                  
+    
+    </Step>
+          
+    
+    <Step icon="Default" name="Create User Approval Form" posX="302" posY="19">
+                    
+        
+        <Approval name="create" return="identityModel,Approve" send="identityModel">
+                              
+            
+            <Arg name="workItemType" value="Approval"/>
+                              
+            
+            <Arg name="workItemForm" value="Create User Approval Form"/>
+                              
+            
+            <Arg name="workItemFormBasePath" value="identityModel"/>
+                              
+            
+            <OwnerScript>
+                                        
+                
+                <Source>
+                                        
+                    <![CDATA[
+       import sailpoint.object.Identity;
+       Identity manager = context.getObjectByName(Identity.class,identityModel.get("manager"));
+       if(null != manager)
+       	return manager.getName();
+       else
+       return requester; 
+       ]]>
+                                    
+                </Source>
+                                      
+            
+            </OwnerScript>
+                            
+        
+        </Approval>
+                    
+        
+        <Transition to="Set identity name" when="&quot;2&quot;.equals(Approve)"/>
+                    
+        
+        <Transition to="Stop"/>
+                  
+    
+    </Step>
+          
+    
+    <Step name="Set identity name" posX="374" posY="52" resultVariable="identityName">
+                    
+        
+        <Description>Set the identityName workflow variable based on the form input.</Description>
+                    
+        
+        <Script>
+                              
+            
+            <Source>
+                                
+                <![CDATA[  	
+		String identityName = generateUserName(identityModel.get("firstname"),identityModel.get("lastname"));     
+		identityModel.put("name",identityName);
+		//workflow.put("identityName",identityName);
+    workflow.put("identityDisplayName",identityName);
+		wfcontext.setVariable("identityDisplayName",identityName); 
+		return identityName;                            
+            ]]>
+                            
+            </Source>
+                            
+        
+        </Script>
+                    
+        
+        <Transition to="Build Plan"/>
+                  
+    
+    </Step>
+          
+    
+    <Step action="call:buildPlanFromIdentityModel" icon="Default" name="Build Plan" posX="653" posY="25" resultVariable="plan">
+                    
+        
+        <Arg name="identityModel" value="ref:identityModel"/>
+                    
+        
+        <Description>Convert the creation request into a provisioning plan.</Description>
+                    
+        
+        <Transition to="Submit Create Request"/>
+                  
+    
+    </Step>
+          
+    
+    <Step icon="Task" name="Submit Create Request" posX="734" posY="13">
+                    
+        
+        <Arg name="approvalScheme"/>
+                    
+        
+        <Arg name="fallbackApprover"/>
+                    
+        
+        <Arg name="endOnManualWorkItems"/>
+                    
+        
+        <Arg name="userEmailTemplate"/>
+                    
+        
+        <Arg name="policiesToCheck"/>
+                    
+        
+        <Arg name="workItemPriority"/>
+                    
+        
+        <Arg name="project"/>
+                    
+        
+        <Arg name="identityRequestId"/>
+                    
+        
+        <Arg name="source" value="ref:source"/>
+                    
+        
+        <Arg name="identityDisplayName" value="ref:identityDisplayName"/>
+                    
+        
+        <Arg name="foregroundProvisioning" value="true"/>
+                    
+        
+        <Arg name="approvalMode"/>
+                    
+        
+        <Arg name="batchRequestItemId"/>
+                    
+        
+        <Arg name="trace" value="string:true"/>
+                    
+        
+        <Arg name="doRefresh"/>
+                    
+        
+        <Arg name="endOnProvisioningForms"/>
+                    
+        
+        <Arg name="approverElectronicSignature"/>
+                    
+        
+        <Arg name="plan" value="ref:plan"/>
+                    
+        
+        <Arg name="flow" value="Create"/>
+                    
+        
+        <Arg name="identityName" value="ref:identityName"/>
+                    
+        
+        <Arg name="notificationScheme"/>
+                    
+        
+        <Arg name="approvalSet"/>
+                    
+        
+        <Arg name="policyViolations"/>
+                    
+        
+        <Arg name="policyScheme"/>
+                    
+        
+        <Arg name="priority"/>
+                    
+        
+        <Arg name="approvalForm"/>
+                    
+        
+        <Arg name="requesterEmailTemplate"/>
+                    
+        
+        <Arg name="approvalEmailTemplate"/>
+                    
+        
+        <Arg name="ticketManagementApplication"/>
+                    
+        
+        <Arg name="optimisticProvisioning"/>
+                    
+        
+        <Arg name="securityOfficerEmailTemplate"/>
+                    
+        
+        <Arg name="securityOfficerName"/>
+                    
+        
+        <Arg name="managerEmailTemplate"/>
+                    
+        
+        <Arg name="ticketId"/>
+                    
+        
+        <Description>Call the LCM Create and Update workflow with the plan that was created.</Description>
+                    
+        
+        <Return name="approvalSet" to="identityApprovalSet"/>
+                    
+        
+        <WorkflowRef>
+                              
+            
+            <Reference class="sailpoint.object.Workflow" name="LCM Create and Update"/>
+                            
+        
+        </WorkflowRef>
+                    
+        
+        <Transition to="Create Plan"/>
+                  
+    
+    </Step>
+          
+    
+    <Step icon="Default" name="Create Plan" posX="335" posY="161" resultVariable="plan">
+                    
+        
+        <Script>
+                              
+            
+            <Source>
+                                
+                <![CDATA[
+		import java.util.ArrayList;
+		import java.util.List;
+
+		import sailpoint.api.IdentityService;
+		import sailpoint.api.SailPointContext;
+		import sailpoint.object.Application;
+		import sailpoint.object.Identity;
+		import sailpoint.object.*;
+		import sailpoint.object.ProvisioningPlan;
+		import sailpoint.object.ProvisioningPlan.AccountRequest;
+		import sailpoint.object.ProvisioningPlan.AttributeRequest;
+		import sailpoint.object.ProvisioningPlan.Operation;
+		import sailpoint.tools.GeneralException;
+		import sailpoint.object.CustomGlobal;
+		import org.apache.log4j.Logger;
+		
+		Logger log = Logger.getLogger("com.AdminAccount");
+		String KEY_APPLICATION_NAME = "AD Lab";
+		String appender="00";
+        boolean isDNUnique=false;
+        String dn = "";
+		String cn = "";
+        Link link=null;
+		String identityDetail = identityModel.get("name");
+		Identity identity = context.getObjectByName(Identity.class,identityDetail);
+		ProvisioningPlan plan = new ProvisioningPlan();
+		plan.setIdentity(identity);	
+		AccountRequest acctRequest = new AccountRequest(AccountRequest.Operation.Create, KEY_APPLICATION_NAME, null, null);
+		acctRequest.setTargetIntegration(KEY_APPLICATION_NAME);
+		plan.add(acctRequest);
+		List requesters = new ArrayList();
+		requesters.add(context.getObjectByName(Identity.class, requester));
+		plan.setRequesters(requesters);
+		plan.setSource("LCM");
+		return plan;
+		
+		]]>
+                            
+            </Source>
+                            
+        
+        </Script>
+                    
+        
+        <Transition to="Provision Account"/>
+                  
+    
+    </Step>
+          
+    
+    <Step icon="Default" name="Provision Account" posX="657" posY="138">
+                    
+        
+        <Arg name="identityName" value="ref:identityName"/>
+                    
+        
+        <Arg name="plan" value="ref:plan"/>
+                    
+        
+        <Arg name="flow" value="AccountsRequest"/>
+                    
+        
+        <Arg name="notificationScheme"/>
+                    
+        
+        <Arg name="approvalScheme " value="String:none"/>
+                    
+        
+        <WorkflowRef>
+                              
+            
+            <Reference class="sailpoint.object.Workflow" name="LCM Provisioning"/>
+                            
+        
+        </WorkflowRef>
+                    
+        
+        <Transition to="end"/>
+                  
+    
+    </Step>
+          
+    
+    <Step icon="Stop" name="Stop" posX="1320" posY="20"/>
+        
+
+</Workflow>
