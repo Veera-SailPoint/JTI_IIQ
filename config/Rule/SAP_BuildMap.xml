@@ -1,0 +1,234 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule  language="beanshell"  name="SAP" type="SAPBuildMap">
+  <Description>
+     This is an example of a buildMap rule for SAP that uses a BAPI call to
+     add additional information to the ResourceObjects built by the default
+     SAP Connector implementation.
+
+     The rule gets a Map named 'object' that holds all of the attributes
+     we've built up using the default SAP implementation.  The object can
+     be modified/added to here to help support customer customizations and
+     transformations that require the SAP system.
+
+     In this example rule we call the BAPI_USER_GET_DETAIL function module
+     and adorn the LASTMODIFIED attributes to our object because they are
+     not part of the base implementation.
+  </Description>
+  <Signature>
+    <Inputs>
+      <Argument name="destination">
+        <Description>
+          A connected/ready to use com.sap.conn.jco.JCoDestination object that can
+          be used to call bapi, function modules and call to SAP tables. This
+          is the main object used in making BAPI calls using the JCo interface.
+          This destination object is shared with the connector implementation and the
+          connector controls the destination's lifecycle.
+         </Description>
+      </Argument>
+      <Argument name="schema">
+        <Description>
+          The schema that represents the object we are building.
+        </Description>
+      </Argument>
+      <Argument name="connector">
+        <Description>
+         The SAP connector that is being used to communicate with SAP.
+         This class is here for convenience as there are many utility methods
+         that make calling Function Modules and doing table lookup easier
+         </Description>
+      </Argument>
+      <Argument name="application">
+        <Description>
+          The SAP application object being used to connect to the SAP system.
+        </Description>
+      </Argument>
+      <Argument name="state">
+        <Description>
+          A map object that can be used to store data during the iteration process.
+        </Description>
+      </Argument>
+      <Argument name="object">
+        <Description>
+          A map object that holds the attributes that have been built up by the
+          default connector implementation. Any attributes built by this rule
+          should be added to this object. This object is handed by reference,
+          so it can be used directly.
+        </Description>
+      </Argument>
+    </Inputs>
+  </Signature>
+  <Source>
+      
+      import com.sap.conn.jco.JCoDestination;
+      import com.sap.conn.jco.JCoException;
+      import com.sap.conn.jco.JCoFunction;
+      import com.sap.conn.jco.JCoParameterList;
+      import com.sap.conn.jco.JCoRecordField;
+      import com.sap.conn.jco.JCoRecordFieldIterator;
+      import com.sap.conn.jco.JCoStructure;
+      import com.sap.conn.jco.JCoTable;
+			import java.text.DateFormat;
+      import sailpoint.connector.Connector;
+      import sailpoint.connector.SAPConnector;
+      import sailpoint.tools.xml.XMLObjectFactory;
+  		import java.text.SimpleDateFormat;
+
+      if ( !Connector.TYPE_ACCOUNT.equals(schema.getObjectType()) ) {
+          return;
+      }
+
+DateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
+
+String TodaysDateFormatted = dateFormatter.format(new Date());
+
+String perNo = (String) object.get("Employee Number");
+
+String id = object.getString("Name");
+
+List fields = new ArrayList();
+
+List conditions = new ArrayList();
+
+fields.clear();
+
+conditions.clear();
+
+conditions.add("PERNR = '" + perNo + "'");
+
+conditions.add("BEGDA &lt;= '" + TodaysDateFormatted + "'");
+
+conditions.add("ENDDA >= '" + TodaysDateFormatted + "'");
+
+ 
+fields.clear();
+
+// DAT01 in PA0041 contains the rehire date
+
+// add required field names
+fields.add("PERSG");
+ 
+  
+
+// PA0000 is default infotype and change it as per your infotype number
+
+lines = connector.querySAPTable(destination, "PA0001", conditions, fields, "DATA");
+
+// iterate lines to get the value of rehire date
+
+String PERSG = null;
+
+if (lines != null &amp;&amp; !lines.isEmpty()) {
+
+for (String value : lines) {
+
+Iterator iterator = lines.iterator();
+
+String element = (String) iterator.next();
+
+PERSG = element;
+   object.put("PERSG",PERSG );
+
+
+}
+
+}
+   //Workgroup Table attributes start
+    fields.clear();
+    fields.add("BEGDA");
+  String BTRTL = null;
+  lines = connector.querySAPTable(destination, "ZV_TEM_SR_HELPWG", conditions, fields, "DATA");
+if (lines != null &amp;&amp; !lines.isEmpty()) {
+for (String value : lines) {
+Iterator iterator = lines.iterator();
+String element = (String) iterator.next();
+BEGDA = element;
+  	object.put("BEGDA",BEGDA );
+} 
+}
+
+    
+    fields.clear();
+    fields.add("ENDDA");
+  String ENDDA = null;
+  lines = connector.querySAPTable(destination, "ZV_TEM_SR_HELPWG", conditions, fields, "DATA");
+if (lines != null &amp;&amp; !lines.isEmpty()) {
+for (String value : lines) {
+Iterator iterator = lines.iterator();
+String element = (String) iterator.next();
+ENDDA = element;
+  	object.put("ENDDA",ENDDA );
+} 
+}
+ 
+   fields.clear();
+    fields.add("TRFGB");
+  String TRFGB = null;
+  lines = connector.querySAPTable(destination, "ZV_TEM_SR_HELPWG", conditions, fields, "DATA");
+if (lines != null &amp;&amp; !lines.isEmpty()) {
+for (String value : lines) {
+Iterator iterator = lines.iterator();
+String element = (String) iterator.next();
+TRFGB = element;
+  	object.put("TRFGB",TRFGB );
+	System.out.println("element");
+} 
+}
+  //Workgroup Table attributes end
+  
+ 
+  //AdAccount attribute
+  
+      conditions.add("SUBTY = '0001'");
+     fields.clear();
+    fields.add("SUBTY");
+  String AdAccount = null;
+  lines = connector.querySAPTable(destination, "PA0105", conditions, fields, "DATA");
+if (lines != null &amp;&amp; !lines.isEmpty()) {
+for (String value : lines) {
+Iterator iterator = lines.iterator();
+String element = (String) iterator.next();
+AdAccount = element;
+  	object.put("AdAccount",AdAccount );
+}
+}
+ 
+  
+// Business Address details to fetch
+  
+  conditions.add("SUBTY = '9002'");
+  
+  fields.clear();
+    fields.add("STRAS");
+  String BusinessAddress = null;
+  lines = connector.querySAPTable(destination, "PA0006", conditions, fields, "DATA");
+if (lines != null &amp;&amp; !lines.isEmpty()) {
+for (String value : lines) {
+Iterator iterator = lines.iterator();
+String element = (String) iterator.next();
+BusinessAddress = element;
+  	object.put("BusinessAddress",BusinessAddress );
+}
+}
+  
+  //Network Account fetching details
+  
+   conditions.add("SUBTY = 'Z004'");
+  
+  fields.clear();
+    fields.add("SUBTY");
+  String NetworkAccount = null;
+  lines = connector.querySAPTable(destination, "PA0105", conditions, fields, "DATA");
+if (lines != null &amp;&amp; !lines.isEmpty()) {
+for (String value : lines) {
+Iterator iterator = lines.iterator();
+String element = (String) iterator.next();
+NetworkAccount = element;
+  	object.put("NetworkAccount",NetworkAccount );
+}
+}
+ 
+
+
+  </Source>
+</Rule>
