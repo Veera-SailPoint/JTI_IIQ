@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="389DS LogiPlex Split Rule" type="ResourceObjectCustomization">
+  <Description>This rule is configured on the application and is called after the connector has build a ResourceObject from the native application data.
+
+Initially designed for non-rule based connectors to add SPPrivileged flag to an object, but could be used to do any transformations.</Description>
+  <Signature returnType="ResourceObject">
+    <Inputs>
+      <Argument name="log">
+        <Description>
+          The log object associated with the SailPointContext.
+        </Description>
+      </Argument>
+      <Argument name="context">
+        <Description>
+          A sailpoint.api.SailPointContext object that can be used to query the database if necessary.
+        </Description>
+      </Argument>
+      <Argument name="object">
+        <Description>
+          The ResourceObject built by the connector.
+        </Description>
+      </Argument>
+      <Argument name="application">
+        <Description>
+          Application that references the connector.
+        </Description>
+      </Argument>
+      <Argument name="connector">
+        <Description>
+          The connector object.
+        </Description>
+      </Argument>
+      <Argument name="state">
+        <Description>
+          A Map containing state information.
+        </Description>
+      </Argument>
+    </Inputs>
+    <Returns>
+      <Argument name="resourceObject">
+        <Description>
+          The updated resource object.
+        </Description>
+      </Argument>
+    </Returns>
+  </Signature>
+  <Source><![CDATA[import sailpoint.tools.Util;
+import sailpoint.object.ResourceObject;
+
+public String resolveApplication(String name) {
+  if (Util.isNotNullOrEmpty(name)) {
+    String lname = name.toLowerCase();
+    if (lname.startsWith("cn=webapplication")) {
+      return "WebApplication";
+    }
+    if (lname.startsWith("cn=expenses-")) {
+      return "Expenses";
+    }
+  }
+  return application.getName();
+}
+
+public Map updateListMap(Map map, String key, String value) {
+  if (map == null) {
+    map = new HashMap();
+  }
+  if (key != null) {
+    List list = map.get(key);
+    if (list == null) {
+      list = new ArrayList();
+    }
+    if (value != null && !list.contains(value)) {
+      list.add(value);
+    }
+    map.put(key, list);
+  }
+  return map;
+}
+
+String applicationName = application.getName();
+Map map = new HashMap();
+
+if ("account".equals(object.getObjectType())) {
+  List groups = object.getStringList("groups");
+  if (groups != null && !groups.isEmpty()) {
+    Map groupMap = new HashMap();
+    groupMap = updateListMap(groupMap, applicationName, null);
+    for (String group: groups) {
+      String appName = resolveApplication(group);
+      if (Util.isNotNullOrEmpty(appName)) {
+        groupMap = updateListMap(groupMap, appName, group);
+      }
+    }
+    Set keys = groupMap.keySet();
+    if (!keys.isEmpty()) {
+      for (String key: keys) {
+        List appGroups = groupMap.get(key);
+        ResourceObject cloneObject = object.deepCopy(context);
+        if (!Util.isEmpty(appGroups)) {
+          cloneObject.put("groups", appGroups);
+        } else {
+          cloneObject.remove("groups");
+        }
+        map.put(key, cloneObject);
+      }
+    } else {
+      map.put(applicationName, object);
+    }
+  } else {
+    map.put(applicationName, object);
+  }
+} else if ("group".equals(object.getObjectType())) {
+  String nativeIdentity = object.getIdentity();
+  String appName = resolveApplication(nativeIdentity);
+  map.put(appName, object);
+} else {
+  map.put(applicationName, object);
+}
+
+return map;]]></Source>
+</Rule>

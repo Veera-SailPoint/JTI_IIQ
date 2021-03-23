@@ -1,0 +1,113 @@
+Release: SSD v6.1 GA
+Released: 8 May 2019
+
+****************************************
+OVERVIEW OF RELEASE
+****************************************
+
+Version 6.1 of the consolidated Services Standard Deployment (SSD) contains several 
+updates, fixes and enhancements, mainly to support deployment of the Accelerator Pack and
+provide compatibility with IdentityIQ 8.0.
+
+****************************************
+NEW TO THIS RELEASE:
+****************************************
+
+SSB: 
+    - Accelerator Pack Deployment with the SSB
+         - New SSB Ant targets to support IdentityIQ deployment with the Accelerator Pack
+         - Documentation updates to provides steps to deploy IdentityIQ with the 
+           Accelerator Pack
+    - Compatibility with IdentityIQ 8.0
+         - Support for environment-specific Log4j2 properties files
+         - Support for Log4j2 in the Log4j Properties Updater
+         - Fix for createdb target to work with MySQL in IdentityIQ 8.0
+    - Other
+         - Change to default location of install and uninstall folders used by the SSB 
+	       Plugin Installer, to prevent browser access to any plugin installation files 
+	       left in the install location. Folder locations are now configurable in the 
+	       ServiceDefinition.
+         - Updated to use v4.0.2 of the OWASP Dependency Check tool
+      
+Please refer to the SSB User Guide for more information on the above features.        
+         
+SSD:
+    - Compatibility with IdentityIQ 8.0
+         - Fix for the SSD Log Level Modifier plugin to work with IdentityIQ 8.0
+         - Fix for the SSD Email Template Editor to work with IdentityIQ 8.0
+         - Fix for the LogiPlex Connector to work with IdentityIQ 8.0
+    - LogiPlex Connector new features and enhancements
+         - Adapter Mode: reducing the need for different main/master applications and 
+           providing better delta aggregation support
+         - JavaDoc comments added for many routines
+         - Extra utility methods added
+         - Improvements for default provisioning logic and after-provisioning plan 
+           compilation
+   
+ 
+****************************************
+NOTES
+****************************************
+
+JDK version 6 is no longer supported in the SSB/SSD.
+
+To assist the SailPoint Support team, the version of the SSB or SSD used to build 
+IdentityIQ can now be seen by accessing the ServicesStandardVersion.html file at the root
+of the application (e.g. http://servername:8080/ServicesStandardVersion.html).  This
+information is taken from these release notes, so please do not delete this file or move
+it from its current location, and do not delete the html file that is generated during the
+build process.  The page also includes a timestamp indicating the last time the build was
+executed.
+
+SSF provisioning now runs in the background by default for all the SSF features, which
+means provisioning will not happen until the next time the Perform Maintenance task runs.
+This is the recommended setting to avoid identity locking conflicts during identity 
+refreshes.
+
+If you are currently using a version of the SSF features and frameworks from SSD v1.1 or
+earlier there is no simple upgrade procedure for these components.  An upgrade would be a
+more in-depth exercise carried out by a trained and experienced IdentityIQ implementer.
+
+****************************************
+SUMMARY OF SSD
+****************************************
+
+The SSD consists of the following packages:
+
+Services Standard Build (SSB) - Standard packaging and build process.
+Services Standard Frameworks (SSF) - Reusable frameworks, features and tools.  
+Services Standard Words (SSW) - Document templates (not shipped with the SSD but provided 
+on Compass)
+Services Standard Performance (SSP) - Performance tools
+Services Standard Test (SST) - Testing tools
+
+
+****************************************
+SUMMARY OF CONTENTS
+****************************************
+
+SSB:            Standard IdentityIQ build tool.
+
+
+SSF:  
+    Frameworks: Field Value, Role Assignment, Dynamic Emails, Approvals, Provision 
+                Processor
+    Features:   Joiner, Mover, Leaver, Attribute Synch, Terminate Identity, Rehire
+    Tools:      Multi-threaded Beanshell Kit, Report Extractor, XML Exporter Task, 
+                Generic Importer, Email Approvals tool, Break Glass Access Request,
+                Correlation Migrator, Workgroup Migrator, Enhanced Email Notifier,
+                IdentityIQ Loopback Connector, Email Template Editor, Certification
+                Exclusion Framework, Access Request Attachments, Server-Specific 
+                Task Launcher, Password Expiration Reminder, Certification Closer,
+                Log Level Manager, Customization Plugin, LogiPlex Connector, 
+                IdentityIQ Summarizer, Mock Integration Executor,
+
+SSP: 
+    Tools:      DB Performance Rule, Sizing Rule, DB Row Count Rule, Task Resulter
+
+SST:
+    Tools:      Unit Tester, JUnit IdentityIQ Helper
+    
+
+For more details on the SSD please visit:
+https://community.sailpoint.com/community/identityiq/sailpoint-toolkits/standard-services-deployment

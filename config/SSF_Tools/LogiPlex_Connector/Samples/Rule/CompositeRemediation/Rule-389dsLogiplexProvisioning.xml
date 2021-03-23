@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="389DS LogiPlex Provisioning" type="CompositeRemediation">
+  <Description>This rule is called when provisioning needs to be performed against logical accounts. It gets the plan built up by the plan compiler and the rule needs to return a list of Plans to fan out the request across all tiers.</Description>
+  <Signature returnType="ProvisioningPlan">
+    <Inputs>
+      <Argument name="log">
+        <Description>
+          The log object associated with the SailPointContext.
+        </Description>
+      </Argument>
+      <Argument name="context">
+        <Description>
+          A sailpoint.api.SailPointContext object that can be used to query the database if necessary.
+        </Description>
+      </Argument>
+      <Argument name="application">
+        <Description>
+          The application associated with the connector.
+        </Description>
+      </Argument>
+      <Argument name="identity">
+        <Description>
+           The Identity object that is going to be remediated.
+        </Description>
+      </Argument>
+      <Argument name="plan">
+        <Description>
+          The ProvisioningPlan created against the logical application.
+        </Description>
+      </Argument>
+    </Inputs>
+    <Returns>
+      <Argument name="provisioningPlan">
+        <Description>
+          A converted provisioning plan that targets the applications
+          that make up the logical application.
+        </Description>
+      </Argument>
+    </Returns>
+  </Signature>
+  <Source><![CDATA[
+import sailpoint.object.ProvisioningPlan;
+import sailpoint.object.ProvisioningPlan.AccountRequest;
+import sailpoint.object.ProvisioningPlan.AttributeRequest;
+import sailpoint.object.Link;
+import sailpoint.object.Attributes;
+import sailpoint.api.IdentityService;
+
+String ENTITLEMENT_ATTRIBUTE = "groups";
+
+/**
+ * Check whether the account request application is the main application.
+ */
+public boolean isMainApplicationRequest(AccountRequest req) {
+  if (req != null) {
+    return req.getApplication().equals(application.getName());
+  }
+  return false;
+}
+
+/**
+ * Get the Link object corresponding to the account request.
+ */
+public Link getLink(AccountRequest req) {
+  if (req != null) {
+    String nativeIdentity = req.getNativeIdentity();
+    if (nativeIdentity != null) {
+      IdentityService service = new IdentityService(context);
+      return service.getLink(identity, req.getApplication(context), req.getInstance(), nativeIdentity);
+    }
+  }
+  return null;
+}
+
+/**
+ * Get the Link object for the main application, corresponding to the account request.
+ */
+public Link getMainLink(AccountRequest req) {
+  if (req != null) {
+    IdentityService service = new IdentityService(context);
+    String nativeIdentity = req.getNativeIdentity();
+    Link link = null;
+    if (nativeIdentity != null) {
+      link = service.getLink(identity, application, req.getInstance(), nativeIdentity);
+    }
+    if (link != null) {
+      return link;
+    }
+    List links = service.getLinks(identity, application, req.getInstance());
+    if (links != null && !links.isEmpty()) {
+      return (Link) links.get(0);
+    }
+  }
+  return null;
+}
+
+// ----[ MAIN RULE ]----
+
+ProvisioningPlan newPlan = new ProvisioningPlan();
+newPlan.setNativeIdentity(plan.getNativeIdentity());
+newPlan.setArguments(plan.getArguments());
+
+List accountRequests = plan.getAccountRequests();
+if (accountRequests != null && !accountRequests.isEmpty()) {
+  for (AccountRequest accountRequest: accountRequests) {
+    if (log.isTraceEnabled()) log.trace(accountRequest.toXml());
+    switch(accountRequest.getOperation().toString()) {
+      case "Create":
+        Link mainLink = getMainLink(accountRequest);
+        if (isMainApplicationRequest(accountRequest) || mainLink == null) {
+          newPlan.add(accountRequest);
+        } else {
+          // just add the groups
+          List atrqs = accountRequest.getAttributeRequests(ENTITLEMENT_ATTRIBUTE);
+          List newAtrqs = new ArrayList();
+          if (atrqs != null && !atrqs.isEmpty()) {
+            for (AttributeRequest atrq: atrqs) {
+              if (ProvisioningPlan.Operation.Set.equals(atrq.getOperation()) || ProvisioningPlan.Operation.Add.equals(atrq.getOperation())) {
+                atrq.setOperation(ProvisioningPlan.Operation.Add);
+                newAtrqs.add(atrq);
+              }
+            }
+          }
+          if (!newAtrqs.isEmpty()) {
+            AccountRequest nar = new AccountRequest();
+            nar.setNativeIdentity(mainLink.getNativeIdentity());
+            nar.setInstance(accountRequest.getInstance());
+            nar.setOperation(AccountRequest.Operation.Modify);
+            nar.setApplication(application.getName());
+            nar.setArguments(accountRequest.getArguments());
+            nar.setAttributeRequests(newAtrqs);
+            newPlan.add(nar);            
+          }
+        }
+        break;
+      case "Enable":
+      case "Disable":
+        if (isMainApplicationRequest(accountRequest)) {
+          newPlan.add(accountRequest);
+        }
+        break;
+      case "Modify":
+        if (isMainApplicationRequest(accountRequest)) {
+          newPlan.add(accountRequest);
+        } else {
+          Link link = getLink(accountRequest);
+          if (link != null) {
+            List atrqs = accountRequest.getAttributeRequests(ENTITLEMENT_ATTRIBUTE);
+            List newAtrqs = new ArrayList();
+            if (atrqs != null && !atrqs.isEmpty()) {
+              for (AttributeRequest atrq: atrqs) {
+                if (ProvisioningPlan.Operation.Set.equals(atrq.getOperation())) {
+                  Attributes attributes = link.getAttributes();
+                  if (attributes != null && !attributes.isEmpty()) {
+                    List groups = attributes.getList(ENTITLEMENT_ATTRIBUTE);
+                    if (groups != null && !groups.isEmpty()) {
+                      for (String group: groups) {
+                        newAtrqs.add(new AttributeRequest(ENTITLEMENT_ATTRIBUTE, ProvisioningPlan.Operation.Add, group));
+                      } 
+                    }
+                    atrq.setOperation(ProvisioningPlan.Operation.Add);
+                    newAtrqs.add(atrq);
+                  } else {
+                    newAtrqs.add(atrq);
+                  }
+                } else {
+                  newAtrqs.add(atrq);
+                }
+              }
+              if (!newAtrqs.isEmpty()) {
+                AccountRequest nar = new AccountRequest();
+                nar.setNativeIdentity(accountRequest.getNativeIdentity());
+                nar.setInstance(accountRequest.getInstance());
+                nar.setOperation(AccountRequest.Operation.Modify);
+                nar.setApplication(application.getName());
+	            nar.setArguments(accountRequest.getArguments());
+                nar.setAttributeRequests(newAtrqs);
+                newPlan.add(nar);            
+              }
+            }
+          }
+        }
+        break;
+      case "Delete":
+        if (isMainApplicationRequest(accountRequest)) {
+          newPlan.add(accountRequest);
+        } else {
+          Link link = getLink(accountRequest);
+          if (link != null) {
+            Attributes attributes = link.getAttributes();
+            if (attributes != null) {
+              List groups = attributes.getList(ENTITLEMENT_ATTRIBUTE);
+              if (groups != null && !groups.isEmpty()) {
+                AccountRequest nar = new AccountRequest();
+                nar.setNativeIdentity(accountRequest.getNativeIdentity());
+                nar.setInstance(accountRequest.getInstance());
+                nar.setOperation(AccountRequest.Operation.Modify);
+                nar.setApplication(application.getName());
+                nar.setArguments(accountRequest.getArguments());
+                for (String group: groups) {
+                  nar.add(new AttributeRequest(ENTITLEMENT_ATTRIBUTE, ProvisioningPlan.Operation.Remove, group));
+                }
+                newPlan.add(nar);
+              }
+            }
+          }
+        }
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+if (log.isTraceEnabled()) log.trace(newPlan.toXml());
+return newPlan;]]></Source>
+</Rule>

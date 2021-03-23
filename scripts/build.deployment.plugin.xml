@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Plugin"  >
+	<!-- allow overriding of build properties -->
+
+	<property name="buildCustPluginPath" location="./../build/buildCustomizationPlugin"/>
+		 
+	<property name="iiq.home" location="./../build/extract"/>
+
+	<condition property="deploymentPluginName" value="DeploymentPlugin">
+		   <not>  
+		      <isset property="deploymentPluginName"/>
+		   </not>
+	</condition>
+	<condition property="deploymentPluginDisplayName" value="DeploymentPlugin">
+		   <not>  
+		      <isset property="deploymentPluginDisplayName"/>
+		   </not>
+	</condition>
+	<condition property="deploymentPluginVersion" value="0.1">
+	   <not>  
+	      <isset property="deploymentPluginVersion"/>
+	   </not>
+	</condition>
+	
+	<target name="clean">
+		<echo message="Starting clean target ${buildCustPluginPath}"/>
+		<delete dir="${buildCustPluginPath}"/>
+	</target>
+	 
+	<target name="sp.services.buildDeploymentPlugin">
+		<tstamp>
+			 <format property="custPluginBuildTime" pattern="yyyyMMddHHmmss"/>
+		</tstamp>
+		<echo>PLUGIN post expansion start ${custPluginBuildTime}</echo>
+		<property name="custPluginBase" location="./../customizationplugin" />
+		<property name="custPluginSource" location="${custPluginBase}/pluginsrc" />
+		<property name="custPluginBuild" location="${buildCustPluginPath}/${deploymentPluginName}" />
+		<property name="custPluginLib" location="${custPluginBuild}/lib" />
+		<property name="custPluginClasses" location="${custPluginBuild}/classes" />
+		<property name="custPluginContents" location="${custPluginBuild}/contents" />
+
+		<mkdir dir="${custPluginClasses}" />
+
+		<javac srcdir="${custPluginSource}" destdir="${custPluginClasses}"  
+             includeantruntime="false" source="1.7" target="1.7">
+			<classpath>
+				<pathelement path="${iiq.home}/WEB-INF/classes"/>
+				<fileset dir="${iiq.home}/WEB-INF/lib">
+					<include name="**/*.jar"/>
+				</fileset>
+			</classpath>
+			<compilerarg value="-Xlint:deprecation" />
+			<compilerarg value="-Xlint:unchecked" />
+		</javac>
+
+		<mkdir dir="${custPluginLib}" />
+
+		<jar destfile="${custPluginLib}/${deploymentPluginName}.jar">
+			<fileset dir="${custPluginClasses}">
+				<include name="**/*" />
+			</fileset>
+		</jar>
+
+		<mkdir dir="${custPluginContents}" />
+
+		<copy todir="${custPluginContents}" overwrite="true">
+			<fileset dir="${custPluginBase}">
+				<include name="manifest.xml" />
+				<include name="db/**" />
+				<include name="import/**" />
+				<include name="lib/*.jar" />
+				<include name="ui/**" />
+			</fileset>
+			<fileset dir="${custPluginBuild}">
+				<include name="lib/*.jar" />
+			</fileset>
+		</copy>
+
+		<echo>Build XML stubs</echo>
+		<echo>${custPluginLib}/${deploymentPluginName}.jar</echo>
+		<mkdir dir="${custPluginContents}/stubs" />
+		<java classname="sailpoint.services.standard.CustomizationPluginAnnotation.AnnotationBrowser">
+
+			<arg value="${custPluginLib}/${deploymentPluginName}.jar"/>
+			<arg value="${custPluginContents}/stubs"/>
+			<arg value="${deploymentPluginName}"/>
+			<classpath>
+				<fileset dir="${custPluginLib}">
+					<include name="**/*.jar"/>
+				</fileset>
+				<pathelement location="${custPluginLib}/${deploymentPluginName}.jar"/>
+				<pathelement path="${iiq.home}/WEB-INF/classes"/>
+				<fileset dir="${iiq.home}/WEB-INF/lib">
+					<include name="**/*.jar"/>
+				</fileset>
+			</classpath>
+		</java>
+		
+		
+		<copy todir="${custPluginContents}/import/upgrade">
+			<fileset dir="${custPluginContents}/stubs"/>
+		</copy>
+		<copy todir="${custPluginContents}/import/install">
+			<fileset dir="${custPluginContents}/stubs"/>
+		</copy>
+
+		<delete dir="${custPluginContents}/stubs"/>
+		
+		
+		<replace file="${custPluginContents}/manifest.xml" token="%%BUILD_TIME%%" value="${custPluginBuildTime}"/>
+		<replace file="${custPluginContents}/manifest.xml" token="%%VERSION_NUMBER%%" value="${deploymentPluginVersion}"/>
+		<replace file="${custPluginContents}/manifest.xml" token="%%PLUGIN_DISPLAY_NAME%%" value="${deploymentPluginDisplayName}"/>
+		<replace file="${custPluginContents}/manifest.xml" token="%%PLUGIN_NAME%%" value="${deploymentPluginName}"/>
+
+		<echo>ZIP plugin</echo>
+		<zip encoding="UTF-8" baseDir="${custPluginContents}" destfile="${custPluginBuild}/dist/${deploymentPluginName}.${deploymentPluginVersion}.zip">
+		</zip>
+		<copy file="${custPluginBuild}/dist/${deploymentPluginName}.${deploymentPluginVersion}.zip" 
+			tofile="./../build/extract/WEB-INF/plugins/ssb/install/${deploymentPluginName}.${deploymentPluginVersion}.zip" 
+			overwrite="true"/>
+	</target>
+</project>

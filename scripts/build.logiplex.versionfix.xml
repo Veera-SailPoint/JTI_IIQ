@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="services.standard.build.logiplexconnector">
+
+    <!-- ********************************************************* -->
+    <!-- Support the LogiPlex connector in IdentityIQ 7.1.         -->
+    <!-- In 7.2, ExpiredPasswordException was moved from package   -->
+    <!-- sailpoint.api to sailpoint.connector so we need to        -->
+	  <!-- modify an import statement to make this work in 7.1.      -->
+    <!-- ********************************************************* -->
+
+   <target name="logiplexconnector.versionfix">
+   	  <if>
+   	  	 <equals arg1="${pre7.2}" arg2="true"/>  	 
+   	     <then>
+   	        <replace file="../src/sailpoint/services/standard/connector/LogiPlexConnector.java" 
+   	     	    token="import sailpoint.connector.ExpiredPasswordException;" 
+   	     	    value="import sailpoint.api.ExpiredPasswordException;"/>
+   	     </then>
+   	     <else> 
+   	        <replace file="../src/sailpoint/services/standard/connector/LogiPlexConnector.java" 
+   	        	token="import sailpoint.api.ExpiredPasswordException;" 
+   	        	value="import sailpoint.connector.ExpiredPasswordException;"/>
+   	     </else>
+   	  </if>
+    </target>
+
+</project>

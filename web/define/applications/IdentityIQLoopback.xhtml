@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- (c) Copyright 2017 SailPoint Technologies, Inc., All Rights Reserved. -->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:t="http://myfaces.apache.org/tomahawk"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:sp="http://sailpoint.com/ui">
+<body>
+
+<ui:composition>
+    <f:view>
+
+      <h:outputText styleClass="sectionHeader" value="#{applicationObject.type} #{msgs.label_configuration}"/><br/><br/>
+      <div id='formErrorsTop' class="formError" style="display:none"/>
+
+      <div id="accountSettings" class='spContent'>
+        <table class="spTable" style="border:0px" cellspacing="0">
+        
+			<!--
+				Ignore non correlated
+			-->
+			<tr>
+            <td class='titleColumn certScheduleTitleCol'>
+              <h:outputText style='padding:5px' value="Ignore non correlated identities"/>
+            </td>
+            <td class="certScheduleHelpCol">
+              <h:graphicImage id="imgHlpignoreNonCorrelated" styleClass="helpIcon" 
+                              url="/images/icons/dashboard_help_16.png" 
+                               alt="Only include correlated identities on aggregation"/>
+            </td>
+            <td>
+              <h:selectBooleanCheckbox value="#{applicationObject.attributes['ignoreNonCorrelatedIdentities']}"/>
+            </td>
+          </tr>
+		  <!--
+				Ignore identities without entitlements
+			-->
+			<tr>
+            <td class='titleColumn certScheduleTitleCol'>
+              <h:outputText style='padding:5px' value="Ignore identities with no entitlements"/>
+            </td>
+            <td class="certScheduleHelpCol">
+              <h:graphicImage styleClass="helpIcon" 
+                              url="/images/icons/dashboard_help_16.png" 
+                               alt="Only aggregate identities which have entitements assigned to them"/>
+            </td>
+            <td>
+              <h:selectBooleanCheckbox value="#{applicationObject.attributes['ignoreIdentitiesWithNoEntitlements']}"/>
+            </td>
+          </tr>
+          
+          <!-- 
+          	Filter identities which are disabled
+           -->
+		  <tr>
+            <td class='titleColumn certScheduleTitleCol'>
+              <h:outputText style='padding:5px' value="Filter Identities which are disabled"/>
+            </td>
+            <td class="certScheduleHelpCol">
+              <h:graphicImage styleClass="helpIcon" 
+                              url="/images/icons/dashboard_help_16.png" 
+                               alt="Only aggregate identities which are enabled"/>
+            </td>
+            <td>
+              <h:selectBooleanCheckbox value="#{applicationObject.attributes['ignoreDisabledIdentities']}"/>
+            </td>
+          </tr>
+        	<!-- 
+        	
+        		Filter Identities
+        	 -->
+          <tr>
+            <td class='titleColumn certScheduleTitleCol'>
+              <h:outputText style='padding:5px' value="Identity filter"/>   
+              <h:outputText styleClass="requiredText" value="*"/>           
+            </td>
+
+            <td class="certScheduleHelpCol">
+              <h:graphicImage styleClass="helpIcon" url="/images/icons/dashboard_help_16.png" 
+                              alt="Filter expression to limit the identities on aggregation"/>
+
+            </td>
+            <td>
+              <h:inputText id="accountName"
+                           value="#{applicationObject.attributes['identityFilter']}"                           
+                           size="80"/>
+            </td>
+          </tr>
+          
+        </table>
+
+      </div>
+
+      <div id='formErrorsBottom' class="formError" style="display:none"/>
+    </f:view>
+</ui:composition>
+
+</body>
+</html>

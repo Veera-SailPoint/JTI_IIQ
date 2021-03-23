@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC
+                "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- (c) Copyright 2008 SailPoint Technologies, Inc., All Rights Reserved. -->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:t="http://myfaces.apache.org/tomahawk"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:sp="http://sailpoint.com/ui">
+<body>
+
+<ui:composition>
+    
+    <f:view>
+      <div class="spContentTitle">
+        <span class="textBold"><h:outputText value="LogiPlex Rules"/></span>
+      </div>
+      <div class="spContent">
+        <a4j:outputPanel id="connectorRulesPanel">
+          <table class="paddedTbl" cellpadding="5" cellspacing="0">
+          <tr>
+            <td>
+              <span class="textBold"><h:outputText value="LogiPlex Split Rule"/></span>
+            </td>
+            <td>
+              <h:graphicImage id="imgHlpLogiPlexSplitRule"
+                              styleClass="helpIcon" url="/images/icons/dashboard_help_16.png"
+                              alt="A special kind of customization rule that returns a Map with application names and ResourceObjects, instead of just a single ResourceObject."/>
+            </td>
+            <td>
+              <h:selectOneMenu id="logiPlexAggregationRule" style="width:300px"
+                               value="#{applicationObject.attributes['logiPlexAggregationRule']}"
+                               disabled="#{!sp:hasRight(facesContext, 'ManageApplication')}"
+                               readonly="#{!sp:hasRight(facesContext, 'ManageApplication')}">
+                <f:selectItems value="#{applicationObject.customizationRules}" />
+              </h:selectOneMenu>
+            </td>
+            <ui:fragment rendered="#{sp:hasRight(facesContext, 'ManageRules')}" >
+            <td>
+                <input type="button" value="#{msgs.button_ellipsis}" class="ruleEditorBtn"
+                       onclick="SailPoint.Rule.Editor.edit(Ext.getDom('editForm:logiPlexAggregationRule').value,
+                                                           'ResourceObjectCustomization',
+                                                           Ext.get('editForm:refreshConnectorRulesButton'))" />
+            </td>
+            </ui:fragment>
+          </tr>
+          <tr>
+            <td>
+              <span class="textBold"><h:outputText value="LogiPlex Provisioning Rule"/></span>
+            </td>
+            <td>
+              <h:graphicImage id="imgHlpLogiPlexProvisioningRule"
+                              styleClass="helpIcon" url="/images/icons/dashboard_help_16.png"
+                              alt="This rule takes a plan and updates the plan to provision to the correct destinations."/>
+            </td>
+            <td>
+              <h:selectOneMenu id="logiPlexProvisioningRule" style="width:300px"
+                                 value="#{applicationObject.attributes['logiPlexProvisioningRule']}"
+                                 disabled="#{!sp:hasRight(facesContext, 'ManageApplication')}"
+                                 readonly="#{!sp:hasRight(facesContext, 'ManageApplication')}">
+                <f:selectItem itemValue="" itemLabel="#{msgs.select_rule}"/>
+                <f:selectItems value="#{applicationObject.compositeRemediationRuleSelectList}" />
+              </h:selectOneMenu>
+            </td>
+            <ui:fragment rendered="#{sp:hasRight(facesContext, 'ManageRules')}" >
+            <td>
+                <input type="button" value="#{msgs.button_ellipsis}" class="ruleEditorBtn"
+                       onclick="SailPoint.Rule.Editor.edit(Ext.getDom('editForm:logiPlexProvisioningRule').value,
+                                                           'CompositeRemediation',
+                                                           Ext.get('editForm:refreshConnectorRulesButton'))" />
+            </td>
+            </ui:fragment>
+          </tr>
+        </table>
+        
+        <a4j:commandButton id="refreshConnectorRulesButton"
+                           style="display:none"
+                           immediate="true"
+                           render="connectorRulesPanel"/>
+        
+        </a4j:outputPanel>
+      </div>
+    </f:view>
+</ui:composition>
+
+</body>
+</html>

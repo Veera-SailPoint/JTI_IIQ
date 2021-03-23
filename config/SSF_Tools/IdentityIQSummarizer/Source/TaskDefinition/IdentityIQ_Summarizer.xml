@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE TaskDefinition PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<TaskDefinition executor="sailpoint.services.standard.task.IdentityIQSummarizer" name="IdentityIQ Summarizer" resultAction="Rename" subType="task_item_type_generic" template="true" type="Generic">
+  <Description>Outputs a summary of IdentityIQ objects into an Excel spreadsheet.</Description>
+  <Owner>
+    <Reference class="sailpoint.object.Identity" name="spadmin"/>
+  </Owner>
+  <Signature>
+    <Inputs>
+      <Argument helpKey="Path to output the Excel file, e.g. /Users/john.smith/Summary.xlsx" name="outputPath" type="string">
+        <Prompt>Output Excel File Path</Prompt>
+      </Argument>
+    </Inputs>
+    <Returns>
+      <Argument name="retVal" type="string"/>
+    </Returns>
+  </Signature>
+</TaskDefinition>

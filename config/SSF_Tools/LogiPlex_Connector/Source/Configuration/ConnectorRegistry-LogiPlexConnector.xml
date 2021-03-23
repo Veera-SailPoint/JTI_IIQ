@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE sailpoint PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<sailpoint>
+	<ImportAction name="merge">
+		<Configuration name="ConnectorRegistry">
+			<Attributes>
+				<Map>
+					<entry key="applicationTemplates">
+						<value>
+							<List>
+								<Application connector="sailpoint.services.standard.connector.LogiPlexConnector" featuresString="DIRECT_PERMISSIONS, PROVISIONING, DISCOVER_SCHEMA, ENABLE, AUTHENTICATE" icon="enterpriseIcon" name="LogiPlex Connector" type="LogiPlex Connector">
+									<Attributes>
+										<Map>
+											<entry key="formPath" value="logiPlexAttributes.xhtml" />
+											<entry key="formPathRules" value="logiPlexRulesForm.xhtml" />
+											<entry key="masterApplication" />
+										</Map>
+									</Attributes>
+									<Schemas>
+										<Schema displayAttribute="username" identityAttribute="username" instanceAttribute="" nativeObjectType="Identity" objectType="account" permissionsRemediationModificationType="None">
+										</Schema>
+									</Schemas>
+								</Application>
+							</List>
+						</value>
+					</entry>
+				</Map>
+			</Attributes>
+		</Configuration>
+	</ImportAction>
+</sailpoint>
+							
