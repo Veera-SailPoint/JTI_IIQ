@@ -1,0 +1,24 @@
+import sailpoint.object.Filter;
+import sailpoint.object.Link;
+import java.util.Map;
+import java.util.HashMap;
+import org.apache.log4j.Logger;
+
+Logger log = Logger.getLogger("com.smwe.AzureADCorrelation");
+
+Map returnMap = new HashMap();
+String userPrincipalName = account.getAttribute("userPrincipalName");
+String upnfirstPart = userPrincipalName.substring(0,userPrincipalName.indexOf("@"));
+Link ADlink=context.getUniqueObject(Link.class,
+Filter.and(Filter.eq("application.name","Active Directory"),
+Filter.or(Filter.eq("UPN",userPrincipalName),
+Filter.eq("sAMAccountName",upnfirstPart))
+));
+if (null!=ADlink){
+log.debug("ADlink.getIdentity()"+ADlink.getidentity());
+Identity = ADlink.getIdentity();
+String name = identity.getName();
+returnMap.put("identityName",name);
+}
+return returnMap;
+
