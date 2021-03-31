@@ -1,0 +1,350 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Application PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Application connector="sailpoint.connector.DelimitedFileConnector" featuresString="NO_RANDOM_ACCESS, DISCOVER_SCHEMA" icon="enterpriseIcon" name="PIM" profileClass="" type="DelimitedFile">
+  <AccountCorrelationConfig>
+    <Reference class="sailpoint.object.CorrelationConfig" name="PIM correlation"/>
+  </AccountCorrelationConfig>
+  <Attributes>
+    <Map>
+      <entry key="acctAggregationEnd">
+        <value>
+          <Date>1471410965821</Date>
+        </value>
+      </entry>
+      <entry key="acctAggregationStart">
+        <value>
+          <Date>1471408856992</Date>
+        </value>
+      </entry>
+      <entry key="compositeDefinition"/>
+      <entry key="delimiter" value=";"/>
+      <entry key="file" value="E://SFTP//PIM//PIM.csv"/>
+      <entry key="fileEncoding" value="UTF8"/>
+      <entry key="filetransport" value="local"/>
+      <entry key="filterEmptyRecords">
+        <value>
+          <Boolean>true</Boolean>
+        </value>
+      </entry>
+      <entry key="filterString" value="ObjectType==&quot;fAccount&quot;"/>
+      <entry key="group.filetransport" value="local"/>
+      <entry key="group.filterEmptyRecords">
+        <value>
+          <Boolean>true</Boolean>
+        </value>
+      </entry>
+      <entry key="group.partitionMode" value="auto"/>
+      <entry key="hasHeader">
+        <value>
+          <Boolean>true</Boolean>
+        </value>
+      </entry>
+      <entry key="host" value="PHIDMUATTSK2"/>
+      <entry key="isSortedByIndexColumn">
+        <value>
+          <Boolean/>
+        </value>
+      </entry>
+      <entry key="managerCorrelationFilter">
+        <value>
+          <Filter operation="EQ" property="globalEmployeeId" value="ManagerPDSID"/>
+        </value>
+      </entry>
+      <entry key="mergeRows">
+        <value>
+          <Boolean/>
+        </value>
+      </entry>
+      <entry key="nativeChangeDetectionAttributeScope" value="entitlements"/>
+      <entry key="nativeChangeDetectionAttributes"/>
+      <entry key="nativeChangeDetectionEnabled">
+        <value>
+          <Boolean/>
+        </value>
+      </entry>
+      <entry key="nativeChangeDetectionOperations"/>
+      <entry key="parseType" value="delimited"/>
+      <entry key="partitionMode" value="auto"/>
+      <entry key="stopIfLineHasWrongColumnLength">
+        <value>
+          <Boolean/>
+        </value>
+      </entry>
+      <entry key="sysDescriptions">
+        <value>
+          <Map>
+            <entry key="en_US"/>
+          </Map>
+        </value>
+      </entry>
+      <entry key="templateApplication" value="DelimitedFile Template"/>
+      <entry key="transportUser" value="idmadmin"/>
+      <entry key="transportUserPassword" value="1:0WyO6SnuJkmEbB/Z/1Es8QQO0Eec3V9eSHaQwFHsNR4="/>
+    </Map>
+  </Attributes>
+  <Owner>
+    <Reference class="sailpoint.object.Identity" name="spadmin"/>
+  </Owner>
+  <Schemas>
+    <Schema displayAttribute="PIMID" identityAttribute="PIMID" instanceAttribute="" nativeObjectType="account" objectType="account" permissionsRemediationModificationType="None">
+      <AttributeDefinition name="ObjectKey" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="ObjectId" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PIMID" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="AccountName" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="LastName" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="FirstName" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="City" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="Company" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="CostCenter" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="CostCenterName" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="Country" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="CreatedTime" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="Creator" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="Department" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="DepartmentNumber" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="Description" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="DisplayName" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="distinguishedName" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="Domain" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="DomainConfiguration" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="Email" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="EmployeeEndDate" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="EmployeeEndDateString" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="EmployeeStartDate" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="EmployeeStartDateString" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="EmployeeType" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="ExpirationTime" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="FAccountStatus" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="FOwner" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="GenerationQualifier" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="identityStatus" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="Initials" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="InitPWD" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="JobTitle" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="LastLogonTimestamp" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="LastNamePrefix" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="ManagedByPDS" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="Manager" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="ManagerPDSID" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="ManagedBy" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="MiddleName" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="MobilePhone" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="Name" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="ObjectType" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="OfficeLocation" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="OfficePhone" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="OtherPhone" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="OU" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PAccountStatus" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PASSecureID" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PASSerialNumber" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PASStatus" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PDSID" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PDSORU" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PDSPayrollNumber" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PDSPayrollOrgCode" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PDSSectorCode" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PDSSectorName" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PDSTerminationReason" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PDSPositionOMLineManagerIndicator" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PDSFunctionTypeCode" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PDSPayrollCountryCode" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PersonalTitle" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="preferredLanguage" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="ResourceSid" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="SuffixTitle" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="UPN" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="UserID" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="APRoles" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="HDRoles" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="RaRoles" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="Exception" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="LegalHold" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="RecentlyLoggedOn" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="InvitationDelay" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="AdditionalRecipient" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PwdLastSet" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="ADManager" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="ExtendLifetime" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="AccountInTransition" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="AccountInTransitionDate" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="InGraceStatus" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="InvitationReason" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="SendPasswordExpirationWarning" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="LastVerifiedDate" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="GlobalInternetAccess" type="string">
+        <Description/>
+      </AttributeDefinition>
+    </Schema>
+  </Schemas>
+</Application>
