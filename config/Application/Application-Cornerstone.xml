@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Application PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Application connector="sailpoint.connector.webservices.WebServicesConnector" featuresString="PROVISIONING, ENABLE, PASSWORD, ACCOUNT_ONLY_REQUEST" name="CornerStone" profileClass="" type="Web Services">
+  <ProvisioningConfig deleteToDisable="true"/>
+  <AccountCorrelationConfig>
+    <Reference class="sailpoint.object.CorrelationConfig" name="CSOD Account Correlation"/>
+  </AccountCorrelationConfig>
+  <Attributes>
+    <Map>
+      <entry key="acctAggregationEnd">
+        <value>
+          <Date>1541598192117</Date>
+        </value>
+      </entry>
+      <entry key="acctAggregationStart">
+        <value>
+          <Date>1541598128144</Date>
+        </value>
+      </entry>
+      <entry key="afterProvisioningRule"/>
+      <entry key="apiId" value="%%CSOD_apiId%%"/>
+      <entry key="apiSecret" value="%%CSOD_apiSecret%%"/>
+      <entry key="authenticationMethod" value="No Auth"/>
+      <entry key="beforeProvisioningRule" value="Csod before provisioning rule"/>
+      <entry key="compositeDefinition"/>
+      <entry key="connectionParameters">
+        <value>
+          <List>
+            <Map>
+              <entry key="afterRule" value="Csod After Throttling Paging Rule"/>
+              <entry key="beforeRule" value="Csod Before Throtthling Paging Rule"/>
+              <entry key="body">
+                <value>
+                  <Map>
+                    <entry key="bodyFormData"/>
+                    <entry key="bodyFormat" value="raw"/>
+                    <entry key="jsonBody"/>
+                  </Map>
+                </value>
+              </entry>
+              <entry key="contextUrl" value="/x/users/v1/employees?includeInactive=true"/>
+              <entry key="header"/>
+              <entry key="httpMethodType" value="GET"/>
+              <entry key="operationType" value="Account Aggregation"/>
+              <entry key="resMappingObj">
+                <value>
+                  <Map>
+                    <entry key="absent" value="workerStatus.absent"/>
+                    <entry key="active" value="workerStatus.active"/>
+                    <entry key="city" value="address.city"/>
+                    <entry key="country" value="address.country"/>
+                    <entry key="displayLanguage" value="settings.displayLanguage"/>
+                    <entry key="fax" value="fax"/>
+                    <entry key="firstName" value="firstName"/>
+                    <entry key="guid" value="guid"/>
+                    <entry key="homePhone" value="homePhone"/>
+                    <entry key="id" value="id"/>
+                    <entry key="lastHireDate" value="workerStatus.lastHireDate"/>
+                    <entry key="lastName" value="lastName"/>
+                    <entry key="line1" value="address.line1"/>
+                    <entry key="line2" value="address.line2"/>
+                    <entry key="manager" value="manager.id"/>
+                    <entry key="middleName" value="middleName"/>
+                    <entry key="mobilePhone" value="mobilePhone"/>
+                    <entry key="originalHireDate" value="workerStatus.originalHireDate"/>
+                    <entry key="ous" value="ous[*].ouId"/>
+                    <entry key="personalEmail" value="personalEmail"/>
+                    <entry key="prefix" value="prefix"/>
+                    <entry key="primaryEmail" value="primaryEmail"/>
+                    <entry key="state" value="address.state"/>
+                    <entry key="suffix" value="suffix"/>
+                    <entry key="userId" value="userId"/>
+                    <entry key="userName" value="userName"/>
+                    <entry key="workPhone" value="workPhone"/>
+                    <entry key="zipCode" value="address.zipCode"/>
+                  </Map>
+                </value>
+              </entry>
+              <entry key="responseCode">
+                <value>
+                  <List>
+                    <String>2**</String>
+                  </List>
+                </value>
+              </entry>
+              <entry key="rootPath" value="$.data.employees"/>
+              <entry key="sequenceNumberForEndpoint" value="1"/>
+              <entry key="uniqueNameForEndPoint" value="Account aggregation"/>    		  
+            </Map>
+            <Map>
+              <entry key="afterRule"/>
+              <entry key="beforeRule" value="Csod Before Authentication Only Rule"/>
+              <entry key="body">
+                <value>
+                  <Map>
+                    <entry key="bodyFormData"/>
+                    <entry key="bodyFormat" value="raw"/>
+                    <entry key="jsonBody" value="{&#xA;&quot;userId&quot;: &quot;$plan.userId$&quot;,&#xA;&quot;userName&quot;: &quot;$plan.nativeIdentity$&quot;,&#xA;&quot;firstName&quot;: &quot;$plan.firstName$&quot;,&#xA;&quot;lastName&quot;: &quot;$plan.lastName$&quot;,&#xA;&quot;primaryEmail&quot;: &quot;$plan.primaryEmail$&quot;,&#xA;&quot;ous&quot;: [&#xA;                    {&#xA;                        &quot;ouId&quot;: &quot;Ext_Dealers_Distributors_NoCode1&quot;,&#xA;                        &quot;type&quot;: &quot;Supervisory Organization&quot;&#xA;                    }&#xA;                ]&#xA;}"/>
+                  </Map>
+                </value>
+              </entry>
+              <entry key="contextUrl" value="/x/users/v1/employees"/>
+              <entry key="header"/>
+              <entry key="httpMethodType" value="POST"/>
+              <entry key="operationType" value="Create Account"/>
+              <entry key="resMappingObj">
+                <value>
+                  <Map>
+                    <entry key="id" value="id"/>
+                  </Map>
+                </value>
+              </entry>
+              <entry key="responseCode">
+                <value>
+                  <List>
+                    <String>200</String>
+                  </List>
+                </value>
+              </entry>
+              <entry key="rootPath" value="$.data"/>
+              <entry key="sequenceNumberForEndpoint" value="2"/>
+              <entry key="uniqueNameForEndPoint" value="Create account"/>
+            </Map>
+            <Map>
+              <entry key="afterRule"/>
+              <entry key="beforeRule" value="Csod Before Enable Disable Rule"/>
+              <entry key="body">
+                <value>
+                  <Map>
+                    <entry key="bodyFormData"/>
+                    <entry key="bodyFormat" value="raw"/>
+                    <entry key="jsonBody" value="{&#xA;  &quot;workerStatus&quot;: &#xA;    {&#xA;        &quot;active&quot;: false&#xA;     }&#xA;}"/>
+                  </Map>
+                </value>
+              </entry>
+              <entry key="contextUrl" value="/x/users/v1/employees?userid=$plan.nativeIdentity$"/>
+              <entry key="header"/>
+              <entry key="httpMethodType" value="PATCH"/>
+              <entry key="operationType" value="Disable Account"/>
+              <entry key="resMappingObj"/>
+              <entry key="responseCode">
+                <value>
+                  <List>
+                    <String>2**</String>
+                  </List>
+                </value>
+              </entry>
+              <entry key="rootPath"/>
+              <entry key="sequenceNumberForEndpoint" value="3"/>
+              <entry key="uniqueNameForEndPoint" value="Disable account"/>
+            </Map>
+            <Map>
+              <entry key="afterRule"/>
+              <entry key="beforeRule" value="Csod Before Authentication Only Rule"/>
+              <entry key="body">
+                <value>
+                  <Map>
+                    <entry key="bodyFormData"/>
+                    <entry key="bodyFormat" value="raw"/>
+                    <entry key="jsonBody"/>
+                  </Map>
+                </value>
+              </entry>
+              <entry key="contextUrl" value="/x/users/v1/employees?userid=$getObject.nativeIdentity$&amp;includeInactive=true"/>
+              <entry key="header"/>
+              <entry key="httpMethodType" value="GET"/>
+              <entry key="operationType" value="Get Object"/>
+              <entry key="resMappingObj">
+                <value>
+                  <Map>
+                    <entry key="absent" value="workerStatus.absent"/>
+                    <entry key="active" value="workerStatus.active"/>
+                    <entry key="city" value="address.city"/>
+                    <entry key="country" value="address.country"/>
+                    <entry key="displayLanguage" value="settings.displayLanguage"/>
+                    <entry key="fax" value="fax"/>
+                    <entry key="firstName" value="firstName"/>
+                    <entry key="guid" value="guid"/>
+                    <entry key="homePhone" value="homePhone"/>
+                    <entry key="id" value="id"/>
+                    <entry key="lastHireDate" value="workerStatus.lastHireDate"/>
+                    <entry key="lastName" value="lastName"/>
+                    <entry key="line1" value="address.line1"/>
+                    <entry key="line2" value="address.line2"/>
+                    <entry key="manager" value="manager.id"/>
+                    <entry key="middleName" value="middleName"/>
+                    <entry key="mobilePhone" value="mobilePhone"/>
+                    <entry key="originalHireDate" value="workerStatus.originalHireDate"/>
+                    <entry key="ous" value="ous[*].ouId"/>
+                    <entry key="personalEmail" value="personalEmail"/>
+                    <entry key="prefix" value="prefix"/>
+                    <entry key="primaryEmail" value="primaryEmail"/>
+                    <entry key="state" value="address.state"/>
+                    <entry key="suffix" value="suffix"/>
+                    <entry key="userId" value="userId"/>
+                    <entry key="userName" value="userName"/>
+                    <entry key="workPhone" value="workPhone"/>
+                    <entry key="zipCode" value="address.zipCode"/>
+                  </Map>
+                </value>
+              </entry>
+              <entry key="responseCode">
+                <value>
+                  <List>
+                    <String>2**</String>
+                  </List>
+                </value>
+              </entry>
+              <entry key="rootPath" value="$.data.employees"/>
+              <entry key="sequenceNumberForEndpoint" value="4"/>
+              <entry key="uniqueNameForEndPoint" value="Get single account"/>
+            </Map>
+            <Map>
+              <entry key="afterRule"/>
+              <entry key="beforeRule" value="Csod Before Enable Disable Rule"/>
+              <entry key="body">
+                <value>
+                  <Map>
+                    <entry key="bodyFormData"/>
+                    <entry key="bodyFormat" value="raw"/>
+                    <entry key="jsonBody" value="{&#xA;  &quot;workerStatus&quot;: &#xA;    {&#xA;        &quot;active&quot;: true&#xA;     }&#xA;}"/>
+                  </Map>
+                </value>
+              </entry>
+              <entry key="contextUrl" value="/x/users/v1/employees?userid=$plan.nativeIdentity$"/>
+              <entry key="header"/>
+              <entry key="httpMethodType" value="PATCH"/>
+              <entry key="operationType" value="Enable Account"/>
+              <entry key="resMappingObj"/>
+              <entry key="responseCode">
+                <value>
+                  <List>
+                    <String>2**</String>
+                  </List>
+                </value>
+              </entry>
+              <entry key="rootPath"/>
+              <entry key="sequenceNumberForEndpoint" value="5"/>
+              <entry key="uniqueNameForEndPoint" value="Enable account"/>
+            </Map>
+          </List>
+        </value>
+      </entry>
+      <entry key="csodSecurityPath" value="%%CSOD_csodSecurityPath%%"/>
+      <entry key="enableStatus" value="active=true"/>
+      <entry key="encrypted" value="accesstoken,refresh_token,oauth_token_info,client_secret"/>
+      <entry key="genericWebServiceBaseUrl" value="https://philips2-pilot.csod.com/services/api"/>
+      <entry key="grant_type" value="REFRESH_TOKEN"/>
+      <entry key="nativeChangeDetectionAttributeScope" value="entitlements"/>
+      <entry key="nativeChangeDetectionAttributes"/>
+      <entry key="nativeChangeDetectionEnabled">
+        <value>
+          <Boolean></Boolean>
+        </value>
+      </entry>
+      <entry key="nativeChangeDetectionOperations"/>
+      <entry key="sysDescriptions">
+        <value>
+          <Map>
+            <entry key="en_US"/>
+          </Map>
+        </value>
+      </entry>
+      <entry key="templateApplication" value="Web Services"/>
+      <entry key="throwProvBeforeRuleException">
+        <value>
+          <Boolean>true</Boolean>
+        </value>
+      </entry>
+      <entry key="timeoutInSeconds" value="100"/>
+      <entry key="userName" value="%%CSOD_userName%%"/>
+    </Map>
+  </Attributes>
+  <CustomizationRule>
+    <Reference class="sailpoint.object.Rule" name="Csod Customization Rule"/>
+  </CustomizationRule>
+  <Owner>
+    <Reference class="sailpoint.object.Identity" name="spadmin"/>
+  </Owner>
+  <ProvisioningForms>
+    <Form name="CSOD Account Create Policy" objectType="account" type="Create">
+      <Attributes>
+        <Map>
+          <entry key="pageTitle" value="CSOD Account Create Policy"/>
+        </Map>
+      </Attributes>
+      <Section name="Section 1">
+        <Field name="userName" required="true" type="string">
+          <Script>
+            <Source>return identity.getAttribute("partnerUniqueMail");</Source>
+          </Script>
+        </Field>
+        <Field name="userId" required="true" type="string">
+          <Script>
+            <Source>return userName;</Source>
+          </Script>
+        </Field>
+        <Field name="firstName" type="string">
+          <Script>
+            <Source>return identity.getFirstname();</Source>
+          </Script>
+        </Field>
+        <Field name="lastName" type="string">
+          <Script>
+            <Source>return identity.getLastname();</Source>
+          </Script>
+        </Field>
+        <Field name="primaryEmail" type="string">
+          <Script>
+            <Source>return identity.getAttribute("partnerUniqueMail");</Source>
+          </Script>
+        </Field>
+      </Section>
+    </Form>
+  </ProvisioningForms>
+  <Schemas>
+    <Schema displayAttribute="userName" groupAttribute="" identityAttribute="userName" instanceAttribute="" nativeObjectType="user" objectType="account">
+      <AttributeDefinition name="id" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="userId" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="userName" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="guid" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="firstName" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="lastName" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="active" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="primaryEmail" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="middleName" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="prefix" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="suffix" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="personalEmail" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="homePhone" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="mobilePhone" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="workPhone" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="fax" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="country" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="line1" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="line2" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="city" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="state" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="zipCode" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="lastHireDate" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="originalHireDate" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="absent" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="displayLanguage" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition name="manager" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition multi="true" name="ous" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+      <AttributeDefinition entitlement="true" managed="true" name="fakeEntitlement" type="string">
+        <Description></Description>
+      </AttributeDefinition>
+    </Schema>
+    <Schema displayAttribute="" identityAttribute="" instanceAttribute="" nativeObjectType="group" objectType="group"/>
+  </Schemas>
+  <ApplicationScorecard/>
+</Application>
